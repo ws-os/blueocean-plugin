@@ -40,7 +40,7 @@ public abstract class Pageables {
         // fast-forward
         int skipped = skip(base,start);
         if (skipped < start){ //already at the end, nothing to return
-                Iterators.emptyIterator();
+            return Iterators.emptyIterator();
         }
         return Iterators.limit(base, limit);
     }
