@@ -23,6 +23,7 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
+import com.google.common.base.Objects;
 import org.kohsuke.stapler.export.Exported;
 
 import java.beans.Introspector;
@@ -35,7 +36,7 @@ import java.lang.reflect.Type;
  * {@link Property} based on {@link Method}.
  * @author Kohsuke Kawaguchi
  */
-final class MethodProperty extends Property {
+public class MethodProperty extends Property {
     private final MethodHandle handle;
     private final Method method;
 
@@ -73,5 +74,10 @@ final class MethodProperty extends Property {
         } catch (Throwable throwable) {
             throw new InvocationTargetException(throwable);
         }
+    }
+
+    @Override
+    public String toString() {
+        return method.getName();
     }
 }

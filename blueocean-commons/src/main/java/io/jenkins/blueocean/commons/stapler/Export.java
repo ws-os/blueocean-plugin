@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.commons.stapler;
 
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.Maps;
 import hudson.ExtensionList;
 import hudson.PluginWrapper;
 import hudson.model.Action;
@@ -9,6 +11,7 @@ import io.jenkins.blueocean.commons.stapler.export.DataWriter;
 import io.jenkins.blueocean.commons.stapler.export.ExportConfig;
 import io.jenkins.blueocean.commons.stapler.export.ExportInterceptor;
 import io.jenkins.blueocean.commons.stapler.export.Flavor;
+import io.jenkins.blueocean.commons.stapler.export.MethodProperty;
 import io.jenkins.blueocean.commons.stapler.export.Model;
 import io.jenkins.blueocean.commons.stapler.export.ModelBuilder;
 import io.jenkins.blueocean.commons.stapler.export.NamedPathPruner;
@@ -28,6 +31,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class Export {
 
@@ -77,6 +86,14 @@ public class Export {
                     .withFlavor(req.getParameter("jsonp") == null ? Flavor.JSON : Flavor.JSONP)
                     .withPrettyPrint(req.hasParameter("pretty")).withSkipIfFail(true);
             serveExposedBean(req, rsp, bean, exportConfig);
+
+            BlueOceanExportInterceptor interceptor = (BlueOceanExportInterceptor) exportConfig.getExportInterceptor();
+
+            System.out.println("===============");
+            for (Map.Entry<String, Long> entry : interceptor.times.entrySet()) {
+                System.out.println(String.format("%s %dms", entry.getKey(), TimeUnit.NANOSECONDS.toMillis(entry.getValue())));
+            }
+
         } else {
             rsp.sendError(HttpURLConnection.HTTP_FORBIDDEN, "jsonp forbidden; implement jenkins.security.SecureRequester");
         }
@@ -151,8 +168,42 @@ public class Export {
     private Export() {};
 
     public static class BlueOceanExportInterceptor extends ExportInterceptor{
+
+        public final Map<String, Long> times;
+        public final String session;
+
+        public BlueOceanExportInterceptor() {
+            this.session = UUID.randomUUID().toString();
+            this.times = Maps.newHashMap();
+        }
+
         @Override
         public Object getValue(Property property, Object model, ExportConfig config) throws IOException {
+            Stopwatch stopwatch;
+            // Only time methods
+            if (property instanceof MethodProperty) {
+                stopwatch = new Stopwatch().start();
+            } else {
+                stopwatch = null;
+            }
+            try {
+                return getValueInternal(property, model, config);
+            } finally {
+                if (stopwatch != null) {
+                    Long time = stopwatch.stop().elapsedTime(TimeUnit.NANOSECONDS);
+                    String key = String.format("%s::%s", model.getClass().getName(), property.name);
+                    Long nanos = times.get(key);
+                    if (nanos == null) {
+                        nanos = time;
+                    } else {
+                        nanos += time;
+                    }
+                    times.put(key, nanos);
+                }
+            }
+        }
+
+        private Object getValueInternal(Property property, Object model, ExportConfig config) throws IOException {
             if(model instanceof Action){
                 try {
                     return property.getValue(model);
