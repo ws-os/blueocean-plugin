@@ -581,7 +581,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sse-gateway</artifactId>
-            <version>1.15</version>
+            <version>1.16-20170921.121028-1</version> <!-- SNAPSHOT from https://github.com/jenkinsci/sse-gateway-plugin/pull/23 refactorings -->
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
