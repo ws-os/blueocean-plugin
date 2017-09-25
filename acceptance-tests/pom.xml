@@ -118,42 +118,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.4</version>
-
-                <executions>
-
-                    <execution>
-                        <phase>initialize</phase>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <configuration>
-                            <nodeVersion>v${node.version}</nodeVersion>
-                            <npmVersion>${npm.version}</npmVersion>
-                            <nodeDownloadRoot>https://repo.jenkins-ci.org/nodejs-dist/</nodeDownloadRoot>
-                            <npmDownloadRoot>https://repo.jenkins-ci.org/npm-dist/</npmDownloadRoot>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <phase>initialize</phase>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-
-                </executions>
-            </plugin>
-        </plugins>
     </build>
 
     <profiles>
@@ -265,74 +229,6 @@
                 </plugins>
             </build>
         </profile>
-        <!--
-      Node/NPM download, install and initialize.
-   -->
-        <profile>
-            <id>node-classifier-linux</id>
-            <activation>
-                <os>
-                    <family>Linux</family>
-                    <arch>amd64</arch>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>node-v${node.version}-linux-x64.tar.gz</node.download.file>
-                <node.download.classifier />
-            </properties>
-        </profile>
-        <profile>
-            <id>node-classifier-mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>node-v${node.version}-darwin-x64.tar.gz</node.download.file>
-                <node.download.classifier />
-            </properties>
-        </profile>
-        <profile>
-            <id>node-classifier-windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>x64</arch>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>win-x64/node.exe</node.download.file>
-                <node.download.classifier>/x64</node.download.classifier>
-            </properties>
-        </profile>
-        <profile>
-            <id>node-classifier-windows-amd64</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>amd64</arch>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>win-x64/node.exe</node.download.file>
-                <node.download.classifier>/x64</node.download.classifier>
-            </properties>
-        </profile>
-        <profile>
-            <id>node-classifier-windows-x86</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                    <arch>x86</arch>
-                </os>
-            </activation>
-            <properties>
-                <node.download.file>win-x86/node.exe</node.download.file>
-                <node.download.classifier />
-            </properties>
-        </profile>
-
         <profile>
             <id>clean-node</id>
             <activation>
