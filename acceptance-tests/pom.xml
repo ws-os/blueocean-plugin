@@ -120,44 +120,9 @@
         </pluginManagement>
         <plugins>
             <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <id>get-node</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>https://nodejs.org/dist/v${node.version}/${node.download.file}</url>
-                            <unpack>false</unpack>
-                            <outputDirectory>
-                                ${project.build.directory}/frontend/v${node.version}${node.download.classifier}
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>get-npm</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>http://registry.npmjs.org/npm/-/npm-${npm.version}.tgz</url>
-                            <unpack>false</unpack>
-                            <outputDirectory>${project.build.directory}/frontend/</outputDirectory>
-                            <outputFileName>npm-${npm.version}.tgz</outputFileName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>0.0.23</version>
+                <version>1.4</version>
 
                 <executions>
 
@@ -170,8 +135,8 @@
                         <configuration>
                             <nodeVersion>v${node.version}</nodeVersion>
                             <npmVersion>${npm.version}</npmVersion>
-                            <!-- Use the pre-download node and npm packages. See download-maven-plugin config above. -->
-                            <downloadRoot>${project.baseUri}target/frontend/</downloadRoot>
+                            <nodeDownloadRoot>https://repo.jenkins-ci.org/nodejs-dist/</nodeDownloadRoot>
+                            <npmDownloadRoot>https://repo.jenkins-ci.org/npm-dist/</npmDownloadRoot>
                         </configuration>
                     </execution>
 
